@@ -96,7 +96,7 @@ func AcquireWithRedis(resouce string, r redis.Cmdable, applyConfigs ...ApplyConf
 		applyOn(&conf)
 	}
 
-	key := fmt.Sprintf("lot:lock:%s", resouce)
+	key := fmt.Sprintf("distlock:%s", resouce)
 	lockID := uuid.NewV4().String()
 
 	tryAt := time.Now()
