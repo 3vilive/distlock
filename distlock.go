@@ -100,23 +100,26 @@ func AcquireWithRedis(resouce string, r redis.Cmdable, applyConfigs ...ApplyConf
 	lockID := uuid.NewV4().String()
 
 	tryAt := time.Now()
-	for time.Now().Sub(tryAt) < conf.Timeout {
+	for {
 		got, err := r.SetNX(key, lockID, conf.Expire).Result()
 		if err != nil {
 			return nil, err
 		}
 
-		if !got {
-			time.Sleep(conf.SleepPerTry)
-			continue
+		if got {
+			return &Lock{
+				Redis:    r,
+				Resource: resouce,
+				Key:      key,
+				LockID:   lockID,
+			}, nil
 		}
 
-		return &Lock{
-			Redis:    r,
-			Resource: resouce,
-			Key:      key,
-			LockID:   lockID,
-		}, nil
+		if time.Now().Sub(tryAt) >= conf.Timeout {
+			break
+		}
+
+		time.Sleep(conf.SleepPerTry)
 	}
 
 	return nil, ErrAcquireLockTimeout
