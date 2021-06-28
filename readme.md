@@ -5,7 +5,7 @@ a simple distributed lock base on redis
 install:
 
 ```
-go get -u github.com/3vilive/distlock.go
+go get -u github.com/3vilive/distlock
 ```
 
 usage:
