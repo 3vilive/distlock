@@ -116,11 +116,9 @@ func AcquireWithRedis(resouce string, r redis.Cmdable, applyConfigs ...ApplyConf
 		}
 
 		if time.Now().Sub(tryAt) >= conf.Timeout {
-			break
+			return nil, ErrAcquireLockTimeout
 		}
 
 		time.Sleep(conf.SleepPerTry)
 	}
-
-	return nil, ErrAcquireLockTimeout
 }
